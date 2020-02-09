@@ -9,7 +9,7 @@
 #define TXD2 17
 
 const char* ssid     = "Stoikost";
-const char* password = "korobo4ka";
+const char* password = "korob";
 const int oneWireBus1 = 5;
 const int oneWireBus2 = 22;
 const int oneWireBus3 = 19;   
