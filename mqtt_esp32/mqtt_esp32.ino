@@ -3,7 +3,7 @@
 #include <PubSubClient.h>
 
 #define STASSID "BestWLAN"
-#define STAPSK  "zte30kl7"
+#define STAPSK  "zte"
 
 
 IPAddress ip(255,255,255,255);
