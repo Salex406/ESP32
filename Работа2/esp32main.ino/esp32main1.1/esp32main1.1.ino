@@ -24,7 +24,7 @@ int co2ppm() {
 }
 
 const char* ssid     = "Stoikost";
-const char* password = "korobo4ka";
+const char* password = "koro";
 const int oneWireBus1 = 5;
 const int oneWireBus2 = 22;
 const int oneWireBus3 = 19;   
