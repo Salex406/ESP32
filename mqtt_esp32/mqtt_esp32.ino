@@ -84,11 +84,14 @@ void loop() {
     reconnect();
   }
   client.loop();
- int temp = rand() % 10 + 18;
- int hum = 100;
 
-  
-    Serial.print("Publish message: ");
+ unsigned long now = millis();
+  if (now - lastMsg > 5000) {
+    lastMsg = now;
+    ++value;
+     int temp = rand() % 10 + 18;
+  int hum = 100;
+  Serial.print("Publish message: ");
     char msg[20];
     sprintf(msg,"%d",temp);
  
@@ -97,5 +100,7 @@ void loop() {
     sprintf(msg,"%d",hum);
     
     client.publish("base/state/humidity", msg);
-    delay(5000);
+  }
+  
+
 }
