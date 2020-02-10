@@ -147,7 +147,7 @@ void loop() {
  unsigned long now = millis();
   if (now - lastMsg > 5000) {
     lastMsg = now;
-    ++value;
+
      //int temp = rand() % 10 + 18;
   //int hum = 100;
     float temp = GetTemperature();
