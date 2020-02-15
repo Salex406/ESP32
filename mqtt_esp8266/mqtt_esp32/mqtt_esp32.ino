@@ -12,7 +12,7 @@
 #define sht_addr 0x40 
 #define sht_temp 0xe3
 #define sht_hum 0xe5
- 
+#define cc_addr 0x5B 
 
 IPAddress ip(255,255,255,255);
 String mac; 
@@ -26,6 +26,72 @@ unsigned long lastMsg = 0;
 char msg[MSG_BUFFER_SIZE];
 int value = 0;
 
+uint8_t i2c_write(uint8_t reg, uint8_t *buf, uint8_t num, uint8_t _i2caddr )
+{
+  Wire.beginTransmission((uint8_t)_i2caddr);
+  Wire.write((uint8_t)reg);
+  Wire.write((uint8_t *)buf, num);
+  Wire.endTransmission();
+}
+
+uint8_t i2c_read(uint8_t reg, uint8_t *buf, uint8_t num, uint8_t _i2caddr)
+{
+  uint8_t value;
+  uint8_t pos = 0;
+  bool eof = false;
+  
+  //on arduino we need to read in 32 byte chunks
+  while(pos < num && !eof){
+    
+               //CHANGE 32 TO LOWER NUMBER HERE, I2C WORKS SLIGHTLY LONGER
+    uint8_t read_now = min(32, num - pos); 
+    Wire.beginTransmission((uint8_t)_i2caddr);
+    Wire.write((uint8_t)reg + pos);
+    Wire.endTransmission();
+    
+    Wire.requestFrom((uint8_t)_i2caddr, read_now);
+    
+    for(int i=0; i<read_now; i++){
+      if(!Wire.available()){
+        eof = true;
+        break;
+      }
+      buf[pos] = Wire.read();
+      pos++;
+    }
+  }
+  return pos;
+}
+
+void configCC()
+{
+  Wire.begin();
+  Wire.setClockStretchLimit(500);
+  uint8_t result;
+  i2c_read(0x00,&result,1,cc_addr);
+  Serial.println("result");
+  Serial.println(result);
+
+
+  i2c_read(0x21,&result,1,cc_addr);
+  Serial.println("HW");
+  Serial.println(result);
+
+  i2c_read(0x01,&result,1,cc_addr);
+  Serial.println("mode");
+  Serial.println(result);
+
+  uint8_t* mode_=NULL;
+  i2c_write(0xF4,NULL,0,cc_addr);//start
+  delay(100);
+  mode_=0x10;
+  i2c_write(0x01,0x10,1,cc_addr);//start
+
+  i2c_read(0x01,&result,1,cc_addr);
+  Serial.println("mode");
+  Serial.println(result);
+    
+}
 
 void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
@@ -39,6 +105,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // Switch on the LED if an 1 was received as first character
   if ((char)payload[0] == '1') {
     Serial.println("1");
+    configCC();
      digitalWrite(Pin1, HIGH); 
   } else {
     Serial.println("0");
